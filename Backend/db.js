@@ -3,7 +3,7 @@ let config = {
     server: 'localhost',
     user: 'sa',
     password: 'tuanlv98',
-    database: 'master'
+    database: 'foodordering'
 };
 
 const poolPromised = new sql.ConnectionPool(config)
