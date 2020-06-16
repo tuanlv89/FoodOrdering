@@ -143,10 +143,11 @@ router.get('/restaurantNearBy', async (req, res, next) => {
                                             .input('Longtitude', sql.Float, userLongtitude)
                                             .input('Distance', sql.Int, distance)
                                             .query('SELECT * FROM(SELECT Id, Name, Address, Phone, Lat, Lng, UserOwner, Image, PaymentUrl,'
-                                                + ' ROUND(111.045 * DEGREES(ACOS(COS(RADIANS(@Latitude)) * COS(RADIANS(lat))'
+                                                + ' ROUND(111.1111 * DEGREES(ACOS(COS(RADIANS(@Latitude)) * COS(RADIANS(lat))'
                                                 + '* COS(RADIANS(lng) - RADIANS(@Longtitude)) + SIN(RADIANS(@Latitude))'
                                                 + '* SIN(RADIANS(lat)))), 2) AS DistanceInKm FROM [Restaurant])tempTable'
                                                 + ' WHERE DistanceInKm < @Distance');
+                                            // 111.1111 : số km trên 1 độ vĩ độ
                 if(queryResult.recordset.length > 0) {
                     res.send(JSON.stringify({ success: true, result: queryResult.recordset, total: queryResult.recordset.length }));
                 } else {
@@ -158,6 +159,121 @@ router.get('/restaurantNearBy', async (req, res, next) => {
             }
         } else {
             res.send(JSON.stringify({ success: false, message: 'Missing userLatitude or userLongtitude'}));
+        }
+    }
+})
+
+
+/*--------------------------- FOOD ------------------------*/
+router.get('/food', async (req, res, next) => {
+    console.log(req.query);
+    if(!_.has(req, 'query.key') || req.query.key != API_KEY) {
+        res.send(JSON.stringify({ success: false, message: 'Wrong API key' }));
+    } else {
+        const { menuId } = req.query;
+        if(!_.isUndefined(menuId)) {
+            try {
+                const pool = await poolPromised;
+                const queryResult = await pool.request()
+                                            .input('MenuId', sql.Int, menuId)
+                                            .query('SELECT ID, Name, Description, Image, Price, IsSize, IsAddon, Discount FROM [Food] WHERE id IN'
+                                            + ' (SELECT FoodID FROM [Menu_Food] WHERE MenuID = @MenuId)');
+                if(queryResult.recordset.length > 0) {
+                    res.send(JSON.stringify({ success: true, result: queryResult.recordset, total: queryResult.recordset.length }));
+                } else {
+                    res.send(JSON.stringify({ success: false, message: 'Empty' }));
+                }                                       
+            } catch(err) { 
+                res.status(500); //Internal server error
+                res.send(JSON.stringify({ success: false, message: err.message }));
+            }
+        } else {
+            res.send(JSON.stringify({ success: false, message: 'Missing menuId'}));
+        }
+    }
+})
+
+router.get('/foodById', async (req, res, next) => {
+    console.log(req.query);
+    if(!_.has(req, 'query.key') || req.query.key !== API_KEY) {
+        res.send(JSON.stringify({ success: false, message: 'Wrong API key'}));
+    } else {
+        const { id } = req.query;
+        if(!_.isUndefined(id)) {
+            try {
+                const pool = await poolPromised;
+                const queryResult = await pool.request()
+                                        .input('FoodId', sql.Int, id)
+                                        .query('SELECT Id, Name, Description, Image, Price, IsSize, IsAddon, Discount FROM [Food] WHERE id = @FoodId');
+                                        console.log('=====================>', queryResult)
+                if(queryResult.recordset.length > 0) {
+                    res.send(JSON.stringify({ success: true, result: queryResult.recordset[0] }));
+                } else {
+                    res.send(JSON.stringify({ success: false, message: 'Empty' }));
+                }
+     
+            } catch(err) {
+                res.status(500); // Internal server error
+                res.send(JSON.stringify({ success: false, message: err.message }));
+            }
+        } else {
+            res.send(JSON.stringify({ success: false, message: 'Missing FoodID'}));
+        }
+    }
+});
+
+router.get('/foodSearchByName', async (req, res, next) => {
+    console.log(req.query);
+    if(!_.has(req, 'query.key') || req.query.key !== API_KEY) {
+        res.send(JSON.stringify({ success: false, message: 'Wrong API key' }));
+    } else {
+        const { search } = req.query;
+        if(!_.isUndefined(search)) {
+            try {
+                const pool = await poolPromised;
+                const queryResult = await pool.request()
+                                        .input('Search', sql.NVarChar, ` -%${search}%- `)
+                                        .query('SELECT Id, Name, Description, Image, Price, IsSize, IsAddon, Discount FROM [Food] WHERE Name LIKE @Search');
+                if(queryResult.recordset.length > 0) {
+                    res.send(JSON.stringify({ success: true, result: queryResult.recordset, total: queryResult.recordset.length }));
+                } else {
+                    res.send(JSON.stringify({ success: false, message: 'Empty' }));
+                }
+            } catch(err) {
+                res.status(500); //Internal server error
+                res.send({ success: false, message: err.message });
+            }
+        } else {
+            res.send(JSON.stringify({ success: false, message: 'Missing search param' }));
+        }
+    }
+});
+
+/*--------------------------- MENU ------------------------*/
+router.get('/menu', async (req, res, next) => {
+    console.log(req.query);
+    if(!_.has(req, 'query.key') || req.query.key != API_KEY) {
+        res.send(JSON.stringify({ success: false, message: 'Wrong API key' }));
+    } else {
+        const { restaurantId } = req.query;
+        if(!_.isUndefined(restaurantId)) {
+            try {
+                const pool = await poolPromised;
+                const queryResult = await pool.request()
+                                            .input('RestaurantId', sql.Int, restaurantId)
+                                            .query('SELECT ID, Name, Description, Image FROM [Menu] WHERE id IN'
+                                            + ' (SELECT MenuId FROM [Restaurant_Menu] WHERE RestaurantId = @RestaurantId)');
+                if(queryResult.recordset.length > 0) {
+                    res.send(JSON.stringify({ success: true, result: queryResult.recordset, total: queryResult.recordset.length }));
+                } else {
+                    res.send(JSON.stringify({ success: false, message: 'Empty' }));
+                }                                       
+            } catch(err) { 
+                res.status(500); //Internal server error
+                res.send(JSON.stringify({ success: false, message: err.message }));
+            }
+        } else {
+            res.send(JSON.stringify({ success: false, message: 'Missing restaurantId'}));
         }
     }
 })
