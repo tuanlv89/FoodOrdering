@@ -1,4 +1,5 @@
-const sql = require('mssql')
+import sql from 'mssql';
+
 let config = {
     server: 'localhost',
     user: 'sa',
@@ -13,4 +14,4 @@ const poolPromised = new sql.ConnectionPool(config)
         return pool;
     }).catch(err => console.log('Database connection failed! Bad config: ', err.message))
 
-    module.exports = { sql, poolPromised }
+module.exports = { sql, poolPromised }

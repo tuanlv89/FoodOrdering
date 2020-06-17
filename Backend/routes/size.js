@@ -1,8 +1,7 @@
-
-const router = require('./index');
-const API_KEY = '14121998';
-const _ = require('lodash');
-const { poolPromised, sql } = require('../db')
+import router from './index';
+import _ from 'lodash';
+import { poolPromised, sql } from '../db';
+import { API_KEY } from '../const';
 
 exports.getSizeByFoodId = router.get('/size', async (req, res, next) => {
     console.log(req.query);

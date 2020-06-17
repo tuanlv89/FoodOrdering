@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "watch": "babel src/app.js --watch --out-file dist/app-compiled.js",
-    "start": "node dist/app-compiled.js"
+    "start": "babel-node --presets es2015 app.js"
   },
   "author": "",
   "license": "ISC",
@@ -17,7 +17,8 @@
     "mssql": "^6.2.0"
   },
   "devDependencies": {
-    "babel": "^6.23.0",
+    "@babel/cli": "^7.10.1",
+    "babel-cli": "^6.26.0",
     "babel-preset-es2015": "^6.24.1"
   }
 }

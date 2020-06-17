@@ -2,10 +2,10 @@
 
 const PORT = 3000;
 
-const express = require('express');
-const bodyParser = require('body-parser');
+import express from 'express';
+import bodyParser from 'body-parser';
+import routes from './routes/index';
 const app = express();
-const routes = require('./routes/index');
 
 const publicDir = (__dirname + '/public');
 
