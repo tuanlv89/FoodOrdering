@@ -4,7 +4,7 @@ import { poolPromised, sql } from '../db';
 import { API_KEY } from '../const';
 
 // Get
-exports.login = router.get('/user', async (req, res, next) => {
+export const login = router.get('/user', async (req, res, next) => {
     console.log(req.query);
     if(!_.has(req, 'query.key') || req.query.key !== API_KEY) {
         res.send(JSON.stringify({ success: false, message: 'Wrong API key' }));
@@ -32,7 +32,7 @@ exports.login = router.get('/user', async (req, res, next) => {
 })
 
 // Post
-exports.register = router.post('/user', async (req, res, next) => {
+export const register = router.post('/user', async (req, res, next) => {
     console.log(req.body);
     if(req.body.key !== API_KEY) {
         res.send(JSON.stringify({ success: false, message: 'Wrong API key.'}));

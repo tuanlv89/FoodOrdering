@@ -4,7 +4,7 @@ import { poolPromised, sql } from '../db';
 import { API_KEY } from '../const';
 
 
-exports.getOrder = router.get('/order', async (req, res, next) => {
+export const getOrder = router.get('/order', async (req, res, next) => {
     console.log(req.query);
     if(!_.has(req, 'query.key') || req.query.key !== API_KEY) {
         res.send(JSON.stringify({ success: false, message: 'Wrong API key' }));
@@ -31,8 +31,34 @@ exports.getOrder = router.get('/order', async (req, res, next) => {
     }
 })
 
+export const getOrderDetail = router.get('/orderDetail', async (req, res, next) => {
+    console.log(req.query);
+    if(!_.has(req, 'query.key') || req.query.key !== API_KEY) {
+        res.send(JSON.stringify({ success: false, message: 'Wrong API key' }));
+    } else {
+        const { orderId } = req.query;
+        if(!_.isUndefined(orderId)) {
+            try {
+                const pool = await poolPromised;
+                const queryResult = await pool.request()
+                                            .input('OrderId', sql.Int, orderId)
+                                            .query('SELECT OrderId, ItemId, Quantity, Price, Discount, Size, Addon, ExtraPrice FROM [OrderDetail] WHERE OrderId=@OrderId');
+                if(queryResult.recordset.length > 0) {
+                    res.send(JSON.stringify({ success: true, result: queryResult.recordset }));
+                } else {
+                    res.send(JSON.stringify({ success: false, message: 'Empty' }));
+                }                                       
+            } catch(err) { 
+                res.status(500); //Internal server error
+                res.send(JSON.stringify({ success: false, message: err.message }));
+            }
+        } else {
+            res.send(JSON.stringify({ success: false, message: 'Missing orderId'}));
+        }
+    }
+})
 
-exports.createOrder = router.post('/createOrder', async (req, res, next) => {
+export const createOrder = router.post('/createOrder', async (req, res, next) => {
     console.log(req.body);
     if(req.body.key !== API_KEY) {
         res.send(JSON.stringify({ success: false, message: 'Wrong API key.'}));

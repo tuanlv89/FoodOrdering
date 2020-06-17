@@ -4,7 +4,7 @@ import { poolPromised, sql } from '../db';
 import { API_KEY } from '../const';
 
 
-exports.getAllRestaurants = router.get('/restaurant', async (req, res, next) => {
+export const getAllRestaurants = router.get('/restaurant', async (req, res, next) => {
     console.log(req.query);
     if(!_.has(req, 'query.key') || req.query.key !== API_KEY) {
         res.send(JSON.stringify({ success: false, message: 'Wrong API key' }));
@@ -25,7 +25,7 @@ exports.getAllRestaurants = router.get('/restaurant', async (req, res, next) => 
     }
 })
 
-exports.getRestaurantById =router.get('/restaurantById', async (req, res, next) => {
+export const getRestaurantById =router.get('/restaurantById', async (req, res, next) => {
     console.log(req.query);
     if(!_.has(req, 'query.key') || req.query.key !== API_KEY) {
         res.send(JSON.stringify({ success: false, message: 'Wrong API key' }));
@@ -52,7 +52,7 @@ exports.getRestaurantById =router.get('/restaurantById', async (req, res, next) 
     }
 })
 
-exports.getRestaurantNearBy = router.get('/restaurantNearBy', async (req, res, next) => {
+export const getRestaurantNearBy = router.get('/restaurantNearBy', async (req, res, next) => {
     console.log(req.query);
     if(!_.has(req, 'query.key') || req.query.key !== API_KEY) {
         res.send(JSON.stringify({ success: false, message: 'Wrong API key' }));
