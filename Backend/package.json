@@ -4,7 +4,9 @@
   "description": "app qlnh",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch": "babel src/app.js --watch --out-file dist/app-compiled.js",
+    "start": "node dist/app-compiled.js"
   },
   "author": "",
   "license": "ISC",
@@ -13,5 +15,9 @@
     "express": "^4.17.1",
     "lodash": "^4.17.15",
     "mssql": "^6.2.0"
+  },
+  "devDependencies": {
+    "babel": "^6.23.0",
+    "babel-preset-es2015": "^6.24.1"
   }
 }

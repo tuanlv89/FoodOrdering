@@ -6,7 +6,7 @@ const { poolPromised, sql } = require('../db')
 
 exports.getAllRestaurants = router.get('/restaurant', async (req, res, next) => {
     console.log(req.query);
-    if(!_.has(req, 'query.key') || req.query.key != API_KEY) {
+    if(!_.has(req, 'query.key') || req.query.key !== API_KEY) {
         res.send(JSON.stringify({ success: false, message: 'Wrong API key' }));
     } else {
         try {
@@ -27,7 +27,7 @@ exports.getAllRestaurants = router.get('/restaurant', async (req, res, next) => 
 
 exports.getRestaurantById =router.get('/restaurantById', async (req, res, next) => {
     console.log(req.query);
-    if(!_.has(req, 'query.key') || req.query.key != API_KEY) {
+    if(!_.has(req, 'query.key') || req.query.key !== API_KEY) {
         res.send(JSON.stringify({ success: false, message: 'Wrong API key' }));
     } else {
         const { id } = req.query;
@@ -54,7 +54,7 @@ exports.getRestaurantById =router.get('/restaurantById', async (req, res, next) 
 
 exports.getRestaurantNearBy = router.get('/restaurantNearBy', async (req, res, next) => {
     console.log(req.query);
-    if(!_.has(req, 'query.key') || req.query.key != API_KEY) {
+    if(!_.has(req, 'query.key') || req.query.key !== API_KEY) {
         res.send(JSON.stringify({ success: false, message: 'Wrong API key' }));
     } else {
         const userLatitude = parseFloat(req.query.lat);

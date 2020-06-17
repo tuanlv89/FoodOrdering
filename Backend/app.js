@@ -21,7 +21,7 @@ const menu = require('./routes/menu');
 const food = require('./routes/food');
 const size = require('./routes/size');
 const addon = require('./routes/addon');
-
+const order = require('./routes/order');
 
 app.listen(PORT, () => {
     console.log('Server running...');
@@ -61,3 +61,8 @@ app.get('/size', size.getSizeByFoodId);
  * Api AddOn
  */
 app.get('/addon', addon.getAddOnByFoodId);
+/**
+ * Api Order
+ */
+app.get('/order', order.getOrder);
+app.post('/createOrder', order.createOrder);
