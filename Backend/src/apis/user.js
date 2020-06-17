@@ -1,10 +1,10 @@
-import router from './index';
+import router from '../routes';
 import _ from 'lodash';
 import { poolPromised, sql } from '../db';
-import { API_KEY } from '../const';
+import { API_KEY } from '../assets/const';
 
 // Get
-export const login = router.get('/user', async (req, res, next) => {
+const login = router.get('/user', async (req, res, next) => {
     console.log(req.query);
     if(!_.has(req, 'query.key') || req.query.key !== API_KEY) {
         res.send(JSON.stringify({ success: false, message: 'Wrong API key' }));
@@ -32,7 +32,7 @@ export const login = router.get('/user', async (req, res, next) => {
 })
 
 // Post
-export const register = router.post('/user', async (req, res, next) => {
+const register = router.post('/user', async (req, res, next) => {
     console.log(req.body);
     if(req.body.key !== API_KEY) {
         res.send(JSON.stringify({ success: false, message: 'Wrong API key.'}));
@@ -69,3 +69,11 @@ export const register = router.post('/user', async (req, res, next) => {
 
     }
 })
+
+
+
+
+export default {
+    login,
+    register
+}

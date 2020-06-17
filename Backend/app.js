@@ -4,14 +4,8 @@ const PORT = 3000;
 
 import express from 'express';
 import bodyParser from 'body-parser';
-import routes from './routes/index';
-import user from './routes/user';
-import restaurant from './routes/restaurant';
-import menu from './routes/menu';
-import food from './routes/food';
-import size from './routes/size';
-import addon from './routes/addon';
-import order from './routes/order';
+import routes from './src/routes/index';
+import * as API from './src/apis';
 
 const app = express();
 

@@ -1,7 +1,7 @@
-import router from './index';
+import router from '../routes';
 import _ from 'lodash';
 import { poolPromised, sql } from '../db';
-import { API_KEY } from '../const';
+import { API_KEY } from '../assets/const';
 
 
 export const getOrder = router.get('/order', async (req, res, next) => {
