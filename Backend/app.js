@@ -15,7 +15,6 @@ app.use(express.static(publicDir));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
-// import files
 app.use('/', routes);
 
 app.listen(PORT, () => {

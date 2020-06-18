@@ -5,3 +5,4 @@ export * from './food';
 export * from './size';
 export * from './addon'
 export * from './order';
+export * from './favorite';

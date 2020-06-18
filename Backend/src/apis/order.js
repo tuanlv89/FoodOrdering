@@ -4,7 +4,7 @@ import { poolPromised, sql } from '../db';
 import { API_KEY } from '../assets/const';
 
 
-export const getOrder = router.get('/order', async (req, res, next) => {
+const getOrder = router.get('/order', async (req, res, next) => {
     console.log(req.query);
     if(!_.has(req, 'query.key') || req.query.key !== API_KEY) {
         res.send(JSON.stringify({ success: false, message: 'Wrong API key' }));
@@ -31,7 +31,7 @@ export const getOrder = router.get('/order', async (req, res, next) => {
     }
 })
 
-export const getOrderDetail = router.get('/orderDetail', async (req, res, next) => {
+const getOrderDetail = router.get('/orderDetail', async (req, res, next) => {
     console.log(req.query);
     if(!_.has(req, 'query.key') || req.query.key !== API_KEY) {
         res.send(JSON.stringify({ success: false, message: 'Wrong API key' }));
@@ -58,7 +58,7 @@ export const getOrderDetail = router.get('/orderDetail', async (req, res, next) 
     }
 })
 
-export const createOrder = router.post('/createOrder', async (req, res, next) => {
+const createOrder = router.post('/createOrder', async (req, res, next) => {
     console.log(req.body);
     if(req.body.key !== API_KEY) {
         res.send(JSON.stringify({ success: false, message: 'Wrong API key.'}));
@@ -102,3 +102,73 @@ export const createOrder = router.post('/createOrder', async (req, res, next) =>
 
     }
 })
+
+
+const updateOrder = router.post('/updateOrder', async (req, res, next) => { // error api
+    console.log(req.body);
+    if(req.body.key !== API_KEY) {
+        res.send(JSON.stringify({ success: false, message: 'Wrong API key.'}));
+    } else {
+        const orderId = req.body.orderId;
+        let orderDetail = req.body.orderDetail;
+        try {
+            orderDetail = JSON.parse(req.body.orderDetail);
+        } catch(err) {
+            res.status(500); // Internal server error
+        }
+        console.log('OrderDetail=======>', orderDetail);
+        if(!_.isUndefined(orderId) && !_.isNull(orderDetail)) {
+            try {
+                const pool = await poolPromised;
+                const table = new sql.Table('OrderDetail'); //Tạo 1 bảng ảo để insert số lượng lớn
+                table.create = true;
+
+                table.columns.add('OrderId', sql.Int, { nullable: false, primary: true });
+                table.columns.add('ItemId', sql.Int, { nullable: false, primary: true });
+                table.columns.add('Quantity', sql.Int, { nullable: false });
+                table.columns.add('Price', sql.Float, { nullable: false });
+                table.columns.add('Discount', sql.Int, { nullable: false });
+                table.columns.add('Size', sql.NVarChar(50), { nullable: false });
+                table.columns.add('Addon', sql.NVarChar(4000), { nullable: false });
+                table.columns.add('ExtraPrice', sql.Float, { nullable: false });
+                console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', orderDetail);
+                
+                for(let i = 0; i< orderDetail.length; i++) {
+                    table.rows.add(
+                        orderId,
+                        orderDetail[i]['foodId'],
+                        orderDetail[i]['foodQuantity'],
+                        orderDetail[i]['foodPrice'],
+                        orderDetail[i]['foodDiscount'],
+                        orderDetail[i]['foodSize'],
+                        orderDetail[i]['foodAddon'],
+                        parseFloat(orderDetail[i]['foodExtraPrice'])
+                    )
+                }
+
+                const request = await pool.request();
+                request.bulk(table, (err, resultBulk) => {
+                    if(err) {
+                        console.log(err);
+                        res.send(JSON.stringify({ success: false, message: err.message }));
+                    } else {
+                        res.send(JSON.stringify({ success: true, message: 'Update OK'} ));
+                    }
+                })
+            } catch(err) {
+                res.status(500); //Internal server error
+                res.send(JSON.stringify({ success: false, message: err.message }));
+            }                                
+        } else {
+            res.send(JSON.stringify({ success: false, message: 'Missing orderId or orderDetail in POST request' }));
+        }
+
+    }
+})
+
+export default {
+    getOrder,
+    getOrderDetail,
+    createOrder,
+    updateOrder
+}
