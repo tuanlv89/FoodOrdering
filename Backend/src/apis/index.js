@@ -1,3 +1,4 @@
+/* eslint-disable import/no-unresolved */
 export * from './user';
 export * from './restaurant';
 export * from './menu';

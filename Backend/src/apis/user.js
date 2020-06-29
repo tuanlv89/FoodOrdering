@@ -1,12 +1,13 @@
-import router from '../routes';
 import _ from 'lodash';
 import bcrypt from 'bcrypt';
+import router from '../routes';
 import { poolPromised, sql } from '../db';
 import { API_KEY } from '../assets/const';
+
 const saltRounds = 10;
 
 // Get
-const login = router.get('/user', async (req, res, next) => {
+/* const login = router.get('/user', async (req, res, next) => {
     console.log(req.query);
     if(!_.has(req, 'query.key') || req.query.key !== API_KEY) {
         res.send(JSON.stringify({ success: false, message: 'Wrong API key' }));
@@ -22,8 +23,8 @@ const login = router.get('/user', async (req, res, next) => {
                     res.send(JSON.stringify({ success: true, result: queryResult.recordset }));
                 } else {
                     res.send(JSON.stringify({ success: false, message: 'Empty' }));
-                }                                       
-            } catch(err) { 
+                }
+            } catch(err) {
                 res.status(500); //Internal server error
                 res.send(JSON.stringify({ success: false, message: err.message }));
             }
@@ -52,8 +53,8 @@ const signin = router.get('/user/sigin', async (req, res, next) => {
                     res.send(JSON.stringify({ success: true, result: queryResult.recordset }));
                 } else {
                     res.send(JSON.stringify({ success: false, message: 'Empty' }));
-                }                                       
-            } catch(err) { 
+                }
+            } catch(err) {
                 res.status(500); //Internal server error
                 res.send(JSON.stringify({ success: false, message: err.message }));
             }
@@ -99,7 +100,7 @@ const register = router.post('/user', async (req, res, next) => {
             } catch(err) {
                 res.status(500); //Internal server error
                 res.send(JSON.stringify({ success: false, message: err.message }));
-            }                                
+            }
         } else {
             res.send(JSON.stringify({ success: false, message: 'Missing email or password in POST body' }));
         }
@@ -107,11 +108,8 @@ const register = router.post('/user', async (req, res, next) => {
     }
 })
 
-
-
-
 export default {
     login,
     signin,
     register
-}
+} */
