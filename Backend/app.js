@@ -7,7 +7,7 @@ const PORT = 3000;
 
 const app = express();
 
-const publicDir = (`${__dirname}/public`);
+const publicDir = (`${__dirname}/public/`);
 
 app.use(express.static(publicDir));
 app.use(bodyParser.json());

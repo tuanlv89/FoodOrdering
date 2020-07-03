@@ -56,27 +56,26 @@ const signup = router.post('/user/registerss', async (req, res) => {
 })
 const register = router.post('/user/register', async (req, res, next) => {
   console.log(req.body);
-  const { userPhone, name, address, email, password, FBID } = req.body;
+  const { userPhone, name, address, email, password } = req.body;
   if (!_.isUndefined(email) || !_.isUndefined(password)) {
     try {
       await createAccount({ email, password })
         .then(async (user) => {
           const pool = await poolPromised;
           const queryResult = await pool.request()
-            .input('FBID', sql.NVarChar, FBID)
             .input('UserPhone', sql.NVarChar, userPhone)
             .input('Name', sql.NVarChar, name)
             .input('Address', sql.NVarChar, address)
             .input('Email', sql.NVarChar, email)
-            .query('INSERT INTO [User](FBID, UserPhone, Name, Address, Email) OUTPUT Inserted.FBID, Inserted.UserPhone, Inserted.Name, Inserted.Address, Inserted.Email'
-                                                  + ' VALUES(@FBID, @UserPhone, @name, @Address, @email)');
+            .query('INSERT INTO [User](UserPhone, Name, Address, Email) OUTPUT Inserted.UserPhone, Inserted.Name, Inserted.Address, Inserted.Email'
+                                                  + ' VALUES(@UserPhone, @Name, @Address, @Email)');
           console.log('===========>', queryResult);
           if (!_.isUndefined(queryResult.rowsAffected)) {
-            res.send(JSON.stringify({ success: true, message: 'Insert OK' }));
+            res.send(JSON.stringify({ success: true, message: 'Đăng ký thành công!', result: queryResult.recordset }));
           } else {
-            res.send(JSON.stringify({ success: false, message: 'Insert failed' }));
+            res.send(JSON.stringify({ success: false, message: 'Đăng ký thất bại' }));
           }
-        }).catch(err => res.status(401).json({ message: err.message }));
+        }).catch(err => res.status(401).json({ success: false, message: err.message }));
     } catch (err) {
       res.status(500); // Internal server error
       res.send(JSON.stringify({ success: false, message: err.message }));
@@ -92,13 +91,24 @@ const login = router.post('/user/login', async (req, res) => {
   if (email && password) {
     let user = await getAccount({ email });
     if (!user) {
-      res.status(401).json({ message: 'Account not found' })
+      res.send(JSON.stringify({ success: false, message: 'Tài khoản không tồn tại' }));
+      res.status(401);
     } else {
       if (user.password === password) {
         let token = Jwt.sign({ email: user.email, password: user.password }, SECRET_KEY, { expiresIn: 86400 }); // sign token
-        res.json({ message: 'OK', token })
+        const pool = await poolPromised;
+        const queryResult = await pool.request()
+          .input('email', sql.NVarChar, email)
+          .query('SELECT UserPhone, Name, Address, Email FROM [User] where Email=@email');
+
+        if (queryResult.recordset.length > 0) {
+          res.send(JSON.stringify({ success: true, result: queryResult.recordset, token }));
+        } else {
+          res.send(JSON.stringify({ success: false, message: 'Failed' }));
+        }
+        // res.json({ success: true, message: 'OK', token })
       } else {
-        res.status(401).json({ message: 'password incorect' });
+        res.status(401).json({ success: false, message: 'password incorect' });
       }
     }
   } else {
