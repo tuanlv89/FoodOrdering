@@ -126,9 +126,33 @@ const getAllAccount = router.get('/account/getAll', ensureToken, async (req, res
   })
 })
 
+const getUser = router.get('/user', async (req, res, next) => {
+  console.log(req.query);
+  if (_.has(req, 'query.email')) {
+    const { email } = req.query;
+    try {
+      const pool = await poolPromised;
+      const queryResult = await pool.request()
+        .input('email', sql.NVarChar, email)
+        .query('SELECT UserPhone, Name, Address, Email FROM [User] where Email=@email');
+      if (queryResult.recordset.length > 0) {
+        res.send(JSON.stringify({ success: true, result: queryResult.recordset }));
+      } else {
+        res.send(JSON.stringify({ success: false, message: 'Empty' }));
+      }
+    } catch (err) {
+      res.status(500); // Internal server error
+      res.send(JSON.stringify({ success: false, message: err.message }));
+    }
+  } else {
+    res.send(JSON.stringify({ success: false, message: 'Missing email in query' }));
+  }
+})
+
 export default {
   login,
   signup,
   register,
-  getAllAccount
+  getAllAccount,
+  getUser
 }

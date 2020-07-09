@@ -26,7 +26,7 @@ export const getSizeByFoodId = router.get('/size', ensureToken, async (req, res)
               .query('SELECT ID, Description, ExtraPrice FROM [Size] WHERE id IN'
                                                 + ' (SELECT SizeId FROM [Food_Size] WHERE FoodId = @FoodId)');
             if (queryResult.recordset.length > 0) {
-              res.send(JSON.stringify({ success: true, result: queryResult.recordset, total: queryResult.recordset.length }));
+              res.send(JSON.stringify({ success: true, result: queryResult.recordset }));
             } else {
               res.send(JSON.stringify({ success: false, message: 'Empty' }));
             }
